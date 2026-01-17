@@ -5,7 +5,7 @@ A hand-made LLM made from scratch by journalists and for journalists.
 ## Design Decisions
 
 ### 1. Corpus Strategy
-- **Initial corpus**: Times of San Diego WordPress archive (~15k articles)
+- **Initial corpus**: Times of San Diego WordPress archive (**81,155 articles** - ~40M words, ~10M tokens)
 - **Future expansion**: Archives from multiple news publishers
 - **Rationale**: Start with what we have, build pipeline that scales
 
