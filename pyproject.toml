@@ -1,0 +1,62 @@
+[project]
+name = "journo-llm"
+version = "0.1.0"
+description = "A hand-made LLM for journalists, by journalists"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Journalism-Only License" }
+authors = [
+    { name = "EJ Fox" }
+]
+
+dependencies = [
+    # Core ML
+    "torch>=2.0.0",
+    "transformers>=4.40.0",
+    "accelerate>=0.27.0",
+    "datasets>=2.18.0",
+    "sentencepiece>=0.2.0",
+
+    # Training infrastructure
+    "modal>=0.60.0",
+    "mlflow>=2.10.0",
+
+    # Data processing
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.0",
+    "lxml>=5.0.0",
+    "python-dotenv>=1.0.0",
+
+    # RLHF (Phase 5)
+    "trl>=0.8.0",
+
+    # Utils
+    "tqdm>=4.66.0",
+    "rich>=13.0.0",
+    "typer>=0.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.3.0",
+    "ipython>=8.0.0",
+]
+
+labeling = [
+    "argilla>=1.28.0",
+]
+
+[project.scripts]
+journo = "journo_llm.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]

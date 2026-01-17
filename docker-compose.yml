@@ -1,0 +1,69 @@
+# Journo LLM - Local Development Stack
+#
+# Services:
+# - journo: Main CLI container for data prep
+# - mlflow: Experiment tracking (optional)
+# - argilla: RLHF labeling interface (optional, Phase 5)
+#
+# Usage:
+#   docker compose up -d              # Start all services
+#   docker compose run journo fetch   # Run data fetch
+#   docker compose up mlflow          # Just MLflow
+
+services:
+  # Main Journo LLM container
+  journo:
+    build: .
+    volumes:
+      - ./data:/app/data
+      - ./journo_llm:/app/journo_llm
+      - ./.env:/app/.env:ro
+    environment:
+      - WORDPRESS_URL=${WORDPRESS_URL:-}
+      - WORDPRESS_USER=${WORDPRESS_USER:-}
+      - WORDPRESS_APP_PASSWORD=${WORDPRESS_APP_PASSWORD:-}
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      - mlflow
+    command: ["journo", "--help"]
+
+  # MLflow for experiment tracking
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.10.0
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_data:/mlflow
+    environment:
+      - MLFLOW_BACKEND_STORE_URI=sqlite:///mlflow/mlflow.db
+      - MLFLOW_DEFAULT_ARTIFACT_ROOT=/mlflow/artifacts
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri sqlite:///mlflow/mlflow.db
+      --default-artifact-root /mlflow/artifacts
+
+  # Argilla for RLHF labeling (Phase 5)
+  # Uncomment when ready for human feedback collection
+  #
+  # argilla:
+  #   image: argilla/argilla-server:latest
+  #   ports:
+  #     - "6900:6900"
+  #   environment:
+  #     - ARGILLA_ELASTICSEARCH=http://elasticsearch:9200
+  #   depends_on:
+  #     - elasticsearch
+  #
+  # elasticsearch:
+  #   image: elasticsearch:8.5.3
+  #   environment:
+  #     - discovery.type=single-node
+  #     - xpack.security.enabled=false
+  #   volumes:
+  #     - es_data:/usr/share/elasticsearch/data
+
+volumes:
+  mlflow_data:
+  # es_data:  # Uncomment for Argilla
